@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>카카오맵 API 테스트</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        #map {
+            width: 100%;
+            height: 500px;
+            margin-top: 20px;
+            border: 2px solid #ddd;
+        }
+        .info {
+            background: #f0f0f0;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+        }
+        .status {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+        }
+        .success {
+            background: #d4edda;
+            color: #155724;
+        }
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        .warning {
+            background: #fff3cd;
+            color: #856404;
+        }
+    </style>
+</head>
+<body>
+    <h1>🗺️ 카카오맵 API 테스트</h1>
+    
+    <div class="info">
+        <h3>설정 정보:</h3>
+        <p><strong>API 키:</strong> e662f1658324d0a00f8772c2ba45b567</p>
+        <p><strong>도메인:</strong> <span id="current-url"></span></p>
+    </div>
+    
+    <div id="status"></div>
+    
+    <div id="map"></div>
+    
+    <script>
+        // 현재 URL 표시
+        document.getElementById('current-url').textContent = window.location.href;
+        
+        const apiKey = 'e662f1658324d0a00f8772c2ba45b567';
+        const statusDiv = document.getElementById('status');
+        
+        function showStatus(message, type = 'warning') {
+            const div = document.createElement('div');
+            div.className = `status ${type}`;
+            div.textContent = message;
+            statusDiv.appendChild(div);
+            console.log(message);
+        }
+        
+        showStatus('⏳ 카카오맵 스크립트 로딩 중...', 'warning');
+        
+        const script = document.createElement('script');
+        script.src = `//dapi.kakao.com/v2/maps/sdk.js?appkey=${apiKey}&autoload=false`;
+        script.async = true;
+        
+        script.onload = function() {
+            showStatus('✅ 스크립트 로드 완료', 'success');
+            
+            if (window.kakao && window.kakao.maps) {
+                showStatus('✅ 카카오 객체 확인', 'success');
+                
+                window.kakao.maps.load(function() {
+                    showStatus('✅ 카카오맵 초기화 완료', 'success');
+                    
+                    try {
+                        // 제주도 중심으로 지도 생성
+                        const container = document.getElementById('map');
+                        const options = {
+                            center: new window.kakao.maps.LatLng(33.3846, 126.5535),
+                            level: 9
+                        };
+                        
+                        const map = new window.kakao.maps.Map(container, options);
+                        showStatus('🎉 지도 표시 성공!', 'success');
+                        
+                        // 마커 추가
+                        const markerPosition = new window.kakao.maps.LatLng(33.3846, 126.5535);
+                        const marker = new window.kakao.maps.Marker({
+                            position: markerPosition,
+                            map: map
+                        });
+                        
+                        showStatus('📍 마커 추가 완료', 'success');
+                        
+                    } catch (error) {
+                        showStatus('❌ 지도 생성 실패: ' + error.message, 'error');
+                        console.error(error);
+                    }
+                });
+            } else {
+                showStatus('❌ 카카오 객체를 찾을 수 없습니다', 'error');
+            }
+        };
+        
+        script.onerror = function(error) {
+            showStatus('❌ 스크립트 로드 실패', 'error');
+            showStatus('🔧 카카오 개발자 콘솔에서 플랫폼 도메인을 등록하세요', 'error');
+            showStatus('📌 등록할 도메인: ' + window.location.origin, 'warning');
+            console.error('Script load error:', error);
+        };
+        
+        document.head.appendChild(script);
+    </script>
+</body>
+</html>
+
