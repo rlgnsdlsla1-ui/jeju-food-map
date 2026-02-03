@@ -102,7 +102,7 @@ export default function KakaoMap({ restaurants, selectedRegion, onMarkerClick }:
     if (!map || !isLoaded) return;
 
     // 기존 마커 제거
-    markers.forEach(marker => marker.setMap(null));
+    markers.forEach((marker: any) => marker.setMap(null));
 
     // 지역별 필터링
     const filteredRestaurants = selectedRegion && selectedRegion !== '전체'

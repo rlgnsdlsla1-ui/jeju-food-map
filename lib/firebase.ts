@@ -33,9 +33,13 @@ if (typeof window !== 'undefined') {
     db = getFirestore(app);
     
     // Analytics 초기화 (브라우저에서만)
-    if (isSupported()) {
-      analytics = getAnalytics(app);
-    }
+    isSupported().then((supported) => {
+      if (supported && app) {
+        analytics = getAnalytics(app);
+      }
+    }).catch((error) => {
+      console.error('Analytics initialization error:', error);
+    });
   } catch (error) {
     console.error('Firebase initialization error:', error);
   }
